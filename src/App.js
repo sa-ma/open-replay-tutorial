@@ -14,6 +14,9 @@ const tracker = new Tracker({
 function App() {
   const [count, setCount] = useState(0);
   useEffect(() => {
+    if (window.asayer && window.asayer.id()) {
+      Sentry.setTag('asayer_session_id', window.asayer.id());
+    }
     tracker.start();
   }, []);
   const increment = () => {
