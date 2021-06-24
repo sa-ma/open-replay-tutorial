@@ -2,21 +2,14 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Tracker from '@asayerio/tracker';
-import * as Sentry from '@sentry/react';
 
 const tracker = new Tracker({
   projectID: 8794100460112674,
-  onStart: ({ sessionToken }) => {
-    Sentry.setTag('openReplaySessionToken', sessionToken);
-  },
 });
 
 function App() {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    if (window.asayer && window.asayer.id()) {
-      Sentry.setTag('asayer_session_id', window.asayer.id());
-    }
     tracker.start();
   }, []);
   const increment = () => {
@@ -26,7 +19,27 @@ function App() {
     setCount((prevState) => (prevState += 1));
   };
   const decrement = () => setCount((prevState) => (prevState -= 1));
-  console.log(count);
+
+  const handleServerError = () => {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    };
+    if (tracker && tracker.sessionID()) {
+      headers['X-Session-Id'] = tracker.sessionID(); // Inject openreplay_session_id
+    }
+    fetch('https://openreplay-backend.herokuapp.com/error', {
+      method: 'GET',
+      headers,
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((error) => {
+        console.log(error);
+        throw 'Custom error triggered, server error';
+      });
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -44,6 +57,9 @@ function App() {
           +
         </button>
       </div>
+      <button className="btn" type="button" onClick={() => handleServerError()}>
+        Handle Server Error
+      </button>
     </div>
   );
 }
