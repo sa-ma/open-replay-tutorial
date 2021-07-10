@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Tracker from '@openreplay/tracker';
 
 const tracker = new Tracker({
-  projectID: 'e5GhEq11jVND65KFNVmQ',
+  projectKey: 'e5GhEq11jVND65KFNVmQ',
+  ingestPoint: 'https://app.openreplaytutorial.ga/ingest',
 });
+tracker.start();
 
 function App() {
   const [count, setCount] = useState(0);
-  useEffect(() => {
-    tracker.start();
-  }, []);
   const increment = () => {
     if (count % 5 === 0 && count !== 0) {
       throw 'Custom error triggered, count a multiple of 5';
@@ -25,8 +24,8 @@ function App() {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
-    if (tracker && tracker.sessionID()) {
-      headers['X-Session-Id'] = tracker.sessionID(); // Inject openreplay_session_id
+    if (tracker && tracker.getSessionToken()) {
+      headers['X-Session-Id'] = tracker.getSessionToken(); // Inject openreplay_session_id
     }
     fetch('https://openreplay-backend.herokuapp.com/error', {
       method: 'GET',
