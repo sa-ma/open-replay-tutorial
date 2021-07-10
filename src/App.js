@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Tracker from '@asayerio/tracker';
+import Tracker from '@openreplay/tracker';
 
 const tracker = new Tracker({
-  projectID: 8794100460112674,
+  projectID: 'e5GhEq11jVND65KFNVmQ',
 });
 
 function App() {
